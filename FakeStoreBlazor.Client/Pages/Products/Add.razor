@@ -1,0 +1,71 @@
+﻿@page "/products/add"
+@using System.ComponentModel.DataAnnotations
+@using FakeStoreBlazor.Client.Models
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+<PageTitle>Adicionar Produto - FakeStore</PageTitle>
+
+<h1>Adicionar Novo Produto</h1>
+
+<EditForm Model="@newProduct" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="title">Título:</label>
+        <InputText id="title" @bind-Value="newProduct.Title" class="form-control" />
+        <ValidationMessage For="@(() => newProduct.Title)" />
+    </div>
+
+    <div class="form-group">
+        <label for="price">Preço:</label>
+        <InputNumber id="price" @bind-Value="newProduct.Price" class="form-control" />
+        <ValidationMessage For="@(() => newProduct.Price)" />
+    </div>
+
+    <div class="form-group">
+        <label for="description">Descrição:</label>
+        <InputTextArea id="description" @bind-Value="newProduct.Description" class="form-control" />
+        <ValidationMessage For="@(() => newProduct.Description)" />
+    </div>
+
+    <div class="form-group">
+        <label for="category">Categoria:</label>
+        <InputText id="category" @bind-Value="newProduct.Category" class="form-control" />
+        <ValidationMessage For="@(() => newProduct.Category)" />
+    </div>
+
+    <div class="form-group">
+        <label for="image">URL da Imagem:</label>
+        <InputText id="image" @bind-Value="newProduct.Image" class="form-control" />
+        <ValidationMessage For="@(() => newProduct.Image)" />
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Salvar</button>
+        <button type="button" class="btn btn-secondary" @onclick="Cancel">Cancelar</button>
+    </div>
+</EditForm>
+
+@code {
+    private Product newProduct = new();
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync("products", newProduct);
+            if (response.IsSuccessStatusCode)
+            {
+                Navigation.NavigateTo("/products");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error adding product: {ex.Message}");
+        }
+    }
+
+    private void Cancel() => Navigation.NavigateTo("/products");   
+}

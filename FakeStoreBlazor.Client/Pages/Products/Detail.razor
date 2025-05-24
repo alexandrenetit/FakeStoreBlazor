@@ -1,0 +1,99 @@
+﻿@page "/products/{id:int}"
+@using FakeStoreBlazor.Client.Models
+@using FakeStoreBlazor.Client.Services
+@inject IProductService ProductService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+<PageTitle>@(product?.Title ?? "Detalhes do Produto")</PageTitle>
+
+@if (isLoading)
+{
+    <div class="loading-spinner"></div>
+}
+else if (errorMessage != null)
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+else if (product == null)
+{
+    <div class="alert alert-warning">Produto não encontrado</div>
+}
+else
+{
+    <div class="product-detail">
+        <div class="product-image-container">
+            <img src="@product.Image" alt="@product.Title" class="product-image" />
+        </div>
+        <div class="product-content">
+            <h1>@product.Title</h1>
+            <p class="price">@product.Price.ToString("C")</p>
+            <p class="category">Categoria: @product.Category</p>
+            <p class="description">@product.Description</p>
+
+            <div class="actions">
+                <button @onclick="() => EditProduct(product.Id)" class="btn btn-primary">Editar</button>
+                <button @onclick="DeleteProduct" class="btn btn-danger">Excluir</button>
+                <a href="/products" class="btn btn-secondary">Voltar à Lista</a>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Product? product;
+    private bool isLoading = true;
+    private string? errorMessage;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            isLoading = true;
+            errorMessage = null;
+            StateHasChanged();
+
+            product = await ProductService.GetProductAsync(Id);
+        }
+        catch (HttpRequestException ex)
+        {
+            errorMessage = $"Erro de rede: {ex.Message}";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Erro ao carregar produto: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void EditProduct(int id)
+    {
+        NavigationManager.NavigateTo($"/products/edit/{id}");
+    }
+
+    private async Task DeleteProduct()
+    {
+        if (product == null) return;
+
+        var confirm = await JSRuntime.InvokeAsync<bool>("confirm", $"Deseja realmente excluir o produto {product.Title}?");
+        if (confirm)
+        {
+            try
+            {
+                await ProductService.DeleteProductAsync(product.Id);
+                NavigationManager.NavigateTo("/products");
+            }
+            catch (Exception ex)
+            {
+                await JSRuntime.InvokeVoidAsync("alert", $"Erro ao excluir produto: {ex.Message}");
+            }
+        }
+    }
+}

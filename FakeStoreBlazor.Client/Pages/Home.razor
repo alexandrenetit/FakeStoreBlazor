@@ -1,0 +1,385 @@
+﻿@* FakeStoreBlazor.Client/Pages/Home.razor *@
+@page "/"
+@using FakeStoreBlazor.Client.Models
+@using FakeStoreBlazor.Client.Services
+@inject IProductService ProductService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+
+<PageTitle>FakeStore - Sua Loja Online</PageTitle>
+
+<link href="~/css/home.css" rel="stylesheet" />
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-overlay">
+        <div class="container">
+            <div class="row align-items-center min-vh-75">
+                <div class="col-lg-6">
+                    <div class="hero-content">
+                        <div class="hero-badge mb-3">
+                            <span class="badge-icon">✨</span>
+                            <span class="badge-text">Curadoria Exclusiva 2025</span>
+                        </div>
+                        <h1 class="hero-title mb-4">
+                            Onde Estilo Encontra
+                            <span class="text-gradient">Revolução</span>
+                        </h1>
+                        <p class="hero-subtitle mb-4">
+                            <span class="highlight-text">Transforme seu mundo</span> com produtos que redefinem o extraordinário. 
+                            Cada item é uma história de <span class="accent-text">inovação, paixão</span> e 
+                            <span class="accent-text">excelência absoluta</span> — porque você merece apenas o melhor que existe.
+                        </p>
+                        <div class="hero-stats mb-4">
+                            <div class="stat-item">
+                                <span class="stat-number">98%</span>
+                                <span class="stat-label">Satisfação</span>
+                            </div>
+                            <div class="stat-divider">•</div>
+                            <div class="stat-item">
+                                <span class="stat-number">24h</span>
+                                <span class="stat-label">Entrega Express</span>
+                            </div>
+                            <div class="stat-divider">•</div>
+                            <div class="stat-item">
+                                <span class="stat-number">50K+</span>
+                                <span class="stat-label">Clientes Apaixonados</span>
+                            </div>
+                        </div>
+                        <div class="hero-actions">
+                            <button class="btn btn-primary btn-lg me-3" @onclick="NavigateToProducts">
+                                <i class="bi bi-lightning-charge-fill me-2"></i>
+                                <span>Descobrir Tesouros</span>
+                                <div class="btn-shimmer"></div>
+                            </button>
+                            <button class="btn btn-outline-light btn-lg" @onclick="ScrollToFeatured">
+                                <i class="bi bi-stars me-2"></i>
+                                <span>Ver Magia</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="hero-image">
+                        <div class="floating-card">
+                            <i class="bi bi-rocket-takeoff-fill"></i>
+                            <span>Entrega Supersônica</span>
+                        </div>
+                        <div class="floating-card floating-card-2">
+                            <i class="bi bi-shield-fill-check"></i>
+                            <span>Proteção Total</span>
+                        </div>
+                        <div class="floating-card floating-card-3">
+                            <i class="bi bi-gem"></i>
+                            <span>Qualidade Premium</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 col-6 mb-4">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="bi bi-box-seam"></i>
+                    </div>
+                    <div class="stat-number">@totalProducts+</div>
+                    <div class="stat-label">Produtos Únicos</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="bi bi-tags"></i>
+                    </div>
+                    <div class="stat-number">@totalCategories+</div>
+                    <div class="stat-label">Universos</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div class="stat-number">50K+</div>
+                    <div class="stat-label">Vidas Transformadas</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="bi bi-star-fill"></i>
+                    </div>
+                    <div class="stat-number">4.9★</div>
+                    <div class="stat-label">Amor Puro</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section class="categories-section" id="categories">
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <div class="section-badge mb-3">
+                <i class="bi bi-compass"></i>
+                <span>Jornada de Descoberta</span>
+            </div>
+            <h2 class="section-title">Universos que <span class="title-highlight">Inspiram</span></h2>
+            <p class="section-subtitle">Cada categoria é uma porta para um mundo de possibilidades infinitas</p>
+        </div>
+        
+        @if (isLoadingCategories)
+        {
+            <div class="d-flex justify-content-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Carregando categorias...</span>
+                </div>
+            </div>
+        }
+        else if (categories != null && categories.Any())
+        {
+            <div class="row g-4">
+                @foreach (var category in categories)
+                {
+                    <div class="col-lg-3 col-md-6">
+                        <div class="category-card" @onclick="() => NavigateToCategory(category)">
+                            <div class="category-icon">
+                                <i class="bi @GetCategoryIcon(category)"></i>
+                            </div>
+                            <h4 class="category-name">@FormatCategoryName(category)</h4>
+                            <p class="category-count">@GetCategoryProductCount(category) obras-primas</p>
+                            <div class="category-overlay">
+                                <span class="btn btn-outline-light">Explorar Universo</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</section>
+
+<!-- Featured Products Section -->
+<section class="featured-section" id="featured">
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <div class="section-badge mb-3">
+                <i class="bi bi-star-fill"></i>
+                <span>Curadoria Especial</span>
+            </div>
+            <h2 class="section-title">Tesouros <span class="title-highlight">Extraordinários</span></h2>
+            <p class="section-subtitle">Descobertas que desafiam o comum e abraçam o espetacular</p>
+        </div>
+        
+        @if (isLoadingProducts)
+        {
+            <div class="d-flex justify-content-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Carregando produtos...</span>
+                </div>
+            </div>
+        }
+        else if (featuredProducts != null && featuredProducts.Any())
+        {
+            <div class="row g-4">
+                @foreach (var product in featuredProducts.Take(8))
+                {
+                    <div class="col-lg-3 col-md-6">
+                        <div class="product-card">
+                            <div class="product-image-container">
+                                <img src="@product.Image" alt="@product.Title" class="product-image" />
+                                <div class="product-overlay">
+                                    <div class="overlay-content">
+                                        <button class="btn btn-primary btn-product" @onclick="() => ViewProduct(product.Id)">
+                                            <i class="bi bi-eye-fill me-2"></i>
+                                            <span>Descobrir Magia</span>
+                                        </button>
+                                        <button class="btn btn-outline-light btn-product mt-2" @onclick="() => EditProduct(product.Id)">
+                                            <i class="bi bi-magic me-2"></i>
+                                            <span>Personalizar</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <span class="product-badge">✨ Exclusivo</span>
+                            </div>
+                            <div class="product-info">
+                                <span class="product-category">@product.Category</span>
+                                <h5 class="product-title">@TruncateTitle(product.Title)</h5>
+                                <div class="product-rating">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <i class="bi @(i <= 4 ? "bi-star-fill" : "bi-star") text-warning"></i>
+                                    }
+                                    <span class="ms-1">(4.0)</span>
+                                </div>
+                                <div class="product-price">
+                                    <span class="current-price">@product.Price.ToString("C")</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            
+            <div class="text-center mt-5">
+                <button class="btn btn-primary btn-lg" @onclick="NavigateToProducts">
+                    <i class="bi bi-infinity me-2"></i>
+                    <span>Explorar Todo o Universo</span>
+                    <div class="btn-shimmer"></div>
+                </button>
+            </div>
+        }
+    </div>
+</section>
+
+<!-- Newsletter Section -->
+<section class="newsletter-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <div class="newsletter-badge mb-3">
+                    <i class="bi bi-envelope-heart-fill"></i>
+                    <span>Conexão Exclusiva</span>
+                </div>
+                <h2 class="newsletter-title mb-3">Seja Parte da <span class="newsletter-highlight">Revolução</span></h2>
+                <p class="newsletter-subtitle mb-4">
+                    Junte-se a uma comunidade de <span class="newsletter-accent">visionários</span> que descobrem primeiro 
+                    as <span class="newsletter-accent">inovações mais incríveis</span> do planeta. 
+                    Acesso VIP a <span class="newsletter-accent">lançamentos exclusivos</span> e ofertas que transformam sonhos em realidade.
+                </p>
+                <div class="newsletter-form">
+                    <div class="input-group">
+                        <input type="email" class="form-control" placeholder="Seu e-mail para experiências épicas" @bind="emailNewsletter">
+                        <button class="btn btn-primary" @onclick="SubscribeNewsletter">
+                            <i class="bi bi-rocket-takeoff me-2"></i>Decolar Agora
+                        </button>
+                    </div>
+                    <small class="newsletter-promise mt-2">
+                        💎 Prometemos enviar apenas conteúdo que vai fazer você se apaixonar
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    window.scrollToElement = (elementId) => {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    };
+</script>
+
+@code {
+    private List<Product>? featuredProducts;
+    private List<string>? categories;
+    private bool isLoadingProducts = true;
+    private bool isLoadingCategories = true;
+    private int totalProducts = 0;
+    private int totalCategories = 0;
+    private string emailNewsletter = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.WhenAll(LoadFeaturedProducts(), LoadCategories());
+    }
+
+    private async Task LoadFeaturedProducts()
+    {
+        try
+        {
+            var products = await ProductService.GetProductsAsync();
+            featuredProducts = products?.Take(8).ToList();
+            totalProducts = products?.Count ?? 0;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading featured products: {ex.Message}");
+        }
+        finally
+        {
+            isLoadingProducts = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadCategories()
+    {
+        try
+        {
+            categories = await ProductService.GetCategoriesAsync();
+            totalCategories = categories?.Count ?? 0;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading categories: {ex.Message}");
+        }
+        finally
+        {
+            isLoadingCategories = false;
+            StateHasChanged();
+        }
+    }
+
+    private void NavigateToProducts() => Navigation.NavigateTo("/products");
+    private void NavigateToCategory(string category) => Navigation.NavigateTo($"/products?category={category}");
+    private void ViewProduct(int id) => Navigation.NavigateTo($"/products/{id}");
+    private void EditProduct(int id) => Navigation.NavigateTo($"/products/edit/{id}");
+
+    private async Task ScrollToFeatured()
+    {
+        await JSRuntime.InvokeVoidAsync("scrollToElement", "featured");
+    }
+
+    private async Task SubscribeNewsletter()
+    {
+        if (!string.IsNullOrWhiteSpace(emailNewsletter))
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "🚀 Bem-vindo(a) à revolução! Prepare-se para experiências que vão transformar sua vida. As melhores surpresas estão chegando!");
+            emailNewsletter = string.Empty;
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "✨ Digite seu e-mail e embarque nesta jornada épica conosco!");
+        }
+    }
+
+    private string GetCategoryIcon(string category) => category.ToLower() switch
+    {
+        "electronics" => "bi-laptop",
+        "jewelery" => "bi-gem",
+        "men's clothing" => "bi-person-fill",
+        "women's clothing" => "bi-person-dress",
+        _ => "bi-tag"
+    };
+
+    private string FormatCategoryName(string category) => category switch
+    {
+        "electronics" => "Tech & Futuro",
+        "jewelery" => "Joias & Elegância",
+        "men's clothing" => "Estilo Masculino",
+        "women's clothing" => "Moda Feminina",
+        _ => category
+    };
+
+    private int GetCategoryProductCount(string category)
+    {
+        return featuredProducts?.Count(p => p.Category?.ToLower() == category.ToLower()) ?? 0;
+    }
+
+    private string TruncateTitle(string? title)
+    {
+        if (string.IsNullOrEmpty(title)) return "Sem título";
+        return title.Length > 50 ? title.Substring(0, 47) + "..." : title;
+    }
+}

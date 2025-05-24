@@ -1,0 +1,41 @@
+﻿@* FakeStoreBlazor.Client/Pages/Products/Index.razor *@
+@page "/products"
+@using FakeStoreBlazor.Client.Models
+@using FakeStoreBlazor.Client.Services
+
+<PageTitle>Produtos - FakeStore</PageTitle>
+
+<div class="products-header">
+    <h1>Lista de Produtos</h1>
+    <button class="btn btn-primary" @onclick="NavigateToAdd">Adicionar Produto</button>
+</div>
+
+@if (isLoading)
+{
+    <div class="loading-spinner"></div>
+}
+else if (products == null || !products.Any())
+{
+    <div class="alert alert-info">Nenhum produto encontrado.</div>
+}
+else
+{
+    <div class="products-grid">
+        @foreach (var product in products)
+        {
+            <div class="product-card">
+                <img src="@product.Image" alt="@product.Title" class="product-image" />
+                <div class="product-body">
+                    <h3 class="product-title">@product.Title</h3>
+                    <p class="product-price">@product.Price.ToString("C")</p>
+                    <p class="product-category">@product.Category</p>
+                    <div class="product-actions">
+                        <button class="btn btn-sm btn-info" @onclick="() => ViewDetails(product.Id)">Detalhes</button>
+                        <button class="btn btn-sm btn-warning" @onclick="() => EditProduct(product.Id)">Editar</button>
+                        <button class="btn btn-sm btn-danger" @onclick="() => DeleteProduct(product.Id)">Remover</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
