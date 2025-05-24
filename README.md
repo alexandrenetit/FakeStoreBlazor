@@ -346,6 +346,6 @@ Este projeto está licenciado sob a **MIT License** - veja o arquivo [LICENSE](L
 ![GitHub Stars](https://img.shields.io/github/stars/seuusername/blazor-fakestore?style=social)
 ![GitHub Forks](https://img.shields.io/github/forks/seuusername/blazor-fakestore?style=social)
 
-**Feito com ❤️ e ☕ por [Seu Nome]**
+**Feito com ❤️ e ☕ por Alexandre**
 
 </div>
