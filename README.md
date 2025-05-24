@@ -329,8 +329,8 @@ Este projeto está licenciado sob a **MIT License** - veja o arquivo [LICENSE](L
 ### **Desenvolvedor**
 - 👤 **Nome**: Alexandre Gonçalves
 - 📧 **Email**: alexandre.netit@gmail.com
-- 🔗 **LinkedIn**: [linkedin.com/in/seuprofile](www.linkedin.com/in/alexandre-a-goncalves)
-- 🐙 **GitHub**: [github.com/seuusername](https://github.com/alexandrenetit)
+- 🔗 **LinkedIn**: [www.linkedin.com/in/alexandre-a-goncalves](www.linkedin.com/in/alexandre-a-goncalves)
+- 🐙 **GitHub**: [https://github.com/alexandrenetit](https://github.com/alexandrenetit)
 
 ### **Projeto**
 - 🔗 **Repositório**: [github.com/seuusername/blazor-fakestore](https://github.com/seuusername/blazor-fakestore)
