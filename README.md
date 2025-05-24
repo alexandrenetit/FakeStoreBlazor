@@ -332,11 +332,6 @@ Este projeto está licenciado sob a **MIT License** - veja o arquivo [LICENSE](L
 - 🔗 **LinkedIn**: [www.linkedin.com/in/alexandre-a-goncalves](www.linkedin.com/in/alexandre-a-goncalves)
 - 🐙 **GitHub**: [https://github.com/alexandrenetit](https://github.com/alexandrenetit)
 
-### **Projeto**
-- 🔗 **Repositório**: [github.com/seuusername/blazor-fakestore](https://github.com/seuusername/blazor-fakestore)
-- 🌐 **Demo Live**: [blazor-fakestore.azurewebsites.net](https://blazor-fakestore.azurewebsites.net)
-- 📖 **Documentação**: [docs.blazor-fakestore.com](https://docs.blazor-fakestore.com)
-
 ---
 
 <div align="center">
